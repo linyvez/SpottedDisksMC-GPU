@@ -3,6 +3,6 @@ cd build || exit
 cmake ..
 make
 cd ..
-./bin/ProjectAKS
+./bin/main
 rm -rf build bin
 
