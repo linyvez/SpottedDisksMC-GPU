@@ -95,7 +95,46 @@ void generate_square_grid() {
 }
 
 void generate_hexagonal_grid() {
-    printf("Please implement me!");
+    Particle particles[N];
+    int count = 0;
+    double spacing = SIGMA;
+    double vertical_spacing = spacing * sqrt(3.0) / 2.0;
+
+    int num_cols = (int)(Lx / spacing);
+
+    int row = 0;
+    while (count < N) {
+        for (int col = 0; col < num_cols && count < N; col++) {
+            Particle particle;
+            particle.x = SIGMA / 2.0 + col * spacing;
+            if (row % 2 == 1) {
+                particle.x += spacing / 2.0;
+            }
+            particle.y = vertical_spacing / 2.0 + row * vertical_spacing;
+            particles[count++] = particle;
+        }
+        row++;
+    }
+
+    FILE *config = fopen("configuration_hexgrid.pdb", "w");
+    if (config == NULL) {
+        printf("Error while opening file\n");
+        return;
+    }
+
+    for (int i = 0; i < N; i++) {
+        fprintf(config, "ATOM  %5d %-4s %-3s %1s%4d    %8.3f%8.3f%8.3f  1.00  0.00\n",
+            i + 1,
+            "ATOM",
+            "RES",
+            "A",
+            1,
+            particles[i].x,
+            particles[i].y,
+            0.0);
+    }
+
+    fclose(config);
 }
 
 
