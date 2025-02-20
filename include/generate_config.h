@@ -14,4 +14,6 @@ typedef struct Particle
 } Particle;
 
 int is_overlaping(Particle particle, Particle particles[], int n);
+void generate_random();
+void generate_grid();
 

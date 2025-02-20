@@ -15,7 +15,8 @@ int is_overlaping(Particle particle, Particle particles[], int n) {
     return 0;
 }
 
-int main() {
+// Task 1 : generate particles randomly 
+void generate_random() {
     Particle particles[N];
     int count = 0;
 
@@ -32,7 +33,7 @@ int main() {
         }
     }
 
-    FILE *config = fopen("configuration.pdb", "w");
+    FILE *config = fopen("configuration_random.pdb", "w");
     if (config == NULL) {
         printf("Error while opening file\n");
     }
@@ -51,5 +52,14 @@ int main() {
     }
     
     fclose(config);
+}
+
+// Task 2 : generate particles in a grid
+void generate_grid() {
+    printf("Hello world!");
+}
+
+int main() {
+    generate_random();
     return 0;
 }
