@@ -140,6 +140,7 @@ void generate_hexagonal_grid() {
 
 int main() {
     generate_random();
-    generate_grid();
+    generate_square_grid();
+    generate_hexagonal_grid();
     return 0;
 }
