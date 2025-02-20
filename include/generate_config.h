@@ -15,5 +15,5 @@ typedef struct Particle
 
 int is_overlaping(Particle particle, Particle particles[], int n);
 void generate_random();
-void generate_grid();
-
+void generate_square_grid();
+void generate_hexagonal_grid();

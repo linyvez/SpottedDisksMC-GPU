@@ -55,11 +55,52 @@ void generate_random() {
 }
 
 // Task 2 : generate particles in a grid
-void generate_grid() {
-    printf("Hello world!");
+void generate_square_grid() {
+
+    Particle particles[N];
+    int count = 0;
+
+    // square grid
+
+    int k = Lx/SIGMA; // number of particles in one row
+
+    while (count < N) {
+        Particle particle;
+        particle.x = SIGMA/2 + count%k * SIGMA;
+        particle.y = SIGMA/2 + SIGMA * (count/k);
+
+        particles[count] = particle;
+        count++;
+    }
+
+    FILE *config = fopen("configuration_squaregrid.pdb", "w");
+    if (config == NULL) {
+        printf("Error while opening file\n");
+    }
+
+    for (int i = 0; i < N; i++) {
+        fprintf(config, "ATOM  %5d %-4s %-3s %1s%4d    %8.3f%8.3f%8.3f  1.00  0.00\n",
+            i+1,
+            "ATOM",
+            "RES",
+            "A",      
+            1,         
+            particles[i].x,
+            particles[i].y,
+            0.0
+            );
+    }
+    
+    fclose(config);
 }
+
+void generate_hexagonal_grid() {
+    printf("Please implement me!");
+}
+
 
 int main() {
     generate_random();
+    generate_grid();
     return 0;
 }
