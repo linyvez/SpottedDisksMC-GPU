@@ -1,6 +1,6 @@
 
 #include "generate_config.h"
-
+#include "cell_linked_algorithm.h"
 
 
 int is_overlaping(Particle particle, Particle particles[], int n) {
@@ -132,6 +132,50 @@ void generate_hexagonal_grid() {
             particles[i].x,
             particles[i].y,
             0.0);
+    }
+
+    fclose(config);
+}
+
+
+void generate_random_algo() {
+    int count = 0;
+
+    for (int i = 0; i < NUM_CELLS; i++) {
+        head[i] = -1;
+    }
+
+    srand((unsigned)time(NULL));
+
+    while (count < N) {
+        Particle particle;
+        particle.x = ((double)rand() / RAND_MAX) * Lx;
+        particle.y = ((double)rand() / RAND_MAX) * Ly;
+
+        if (!is_overlapping_algo(particle, count)) {
+            particles[count] = particle;
+            insert_particle_in_cell(count, particle);
+            count++;
+        }
+    }
+
+    FILE *config = fopen("configuration_random_fast.pdb", "w");
+    if (config == NULL) {
+        printf("Error while opening file\n");
+        return;
+    }
+
+    for (int i = 0; i < N; i++) {
+        fprintf(config, "ATOM  %5d %-4s %-3s %1s%4d    %8.3f%8.3f%8.3f  1.00  0.00\n",
+                i+1,
+                "ATOM",
+                "RES",
+                "A",
+                1,
+                particles[i].x,
+                particles[i].y,
+                0.0
+        );
     }
 
     fclose(config);
