@@ -1,5 +1,5 @@
-#define N 350
-#define Lx 24.0
+#define N 99+11*2
+#define Lx 11.0
 #define Ly 24.0
 #define SIGMA 1.0
 
