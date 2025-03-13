@@ -12,7 +12,7 @@ int get_cell_index(double x, double y) {
     return ix + Mx * iy;
 }
 
-int is_overlapping_algo(Particle particle, int num_particles) {
+int is_overlapping_algo(Particle particle) {
     int cell = get_cell_index(particle.x, particle.y);
 
     int ix = cell % Mx;
@@ -59,7 +59,7 @@ void generate_random_algo() {
         particle.x = ((double)rand() / RAND_MAX) * Lx;
         particle.y = ((double)rand() / RAND_MAX) * Ly;
 
-        if (!is_overlapping_algo(particle, count)) {
+        if (!is_overlapping_algo(particle)) {
             particles[count] = particle;
             insert_particle_in_cell(count, particle);
             count++;

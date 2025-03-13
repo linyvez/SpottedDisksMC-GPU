@@ -7,4 +7,11 @@
 
 #include "cell_linked_algorithm.h"
 
+double calculate_energy(double x, double y);
+double random_uniform();
+void write_to_file(int frame_number);
+void no_optimization_move();
+
+
+
 #endif

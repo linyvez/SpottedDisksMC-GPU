@@ -9,29 +9,7 @@ double random_uniform() {
     return ((double)rand()/RAND_MAX);
 }
 
-// creates an initial configuration using Linked Cell Algorithm
-void initial_generate() {
-    int count = 0;
 
-    for (int i = 0; i < NUM_CELLS; i++) {
-        head[i] = -1;
-    }
-
-    srand((unsigned)time(NULL));
-
-    while (count < N) {
-        Particle particle;
-        particle.x = ((double)rand() / RAND_MAX) * Lx;
-        particle.y = ((double)rand() / RAND_MAX) * Ly;
-
-        if (!is_overlapping_algo(particle, count)) {
-            particles[count] = particle;
-            insert_particle_in_cell(count, particle);
-            count++;
-        }
-    }
-
-}
 
 void write_to_file(int frame_number) {
     char filename[20];
@@ -80,14 +58,49 @@ void no_optimization_move() {
     }
 }
 
+void randomize_coordinates(Particle particle) {
+    double x1 = fabs(particle.x + random_uniform() - 0.5);
+    double y1 = fabs(particle.y + random_uniform() - 0.5);
+
+    // make sure the particles do not leave the field
+    x1 = (x1 > Lx) ? x1 - Lx : x1;
+    y1 = (y1 > Ly) ? y1 - Ly : y1;
+
+    particle.x = x1;
+    particle.y = y1;
+}
+
+
+// optimized using linked cell algorithm
+void linked_move() {
+    for (int i = 0; i < N; i++) {
+        double x0 = particles[i].x;
+        double y0 = particles[i].y;
+
+        // the coordinates do not change here... .... ....
+        while(is_overlapping_algo(particles[i])) {
+            printf("Particle %d: x = %f, y = %f\n", i, particles[i].x, particles[i].y);
+            randomize_coordinates(particles[i]);
+        }
+
+        double w = exp(-(calculate_energy(particles[i].x,particles[i].y)-calculate_energy(x0, y0))/kB*T);
+        if (w > 1) w = 1;
+
+        if ((random_uniform() > w)) {
+            // reject
+            particles[i].x = x0;
+            particles[i].y = y0;
+        }
+    }
+}
+
 
 int main() {
     int frame_count = 50;
-    initial_generate();
+    generate_random_algo();
     write_to_file(0);
     for (int i = 1; i < frame_count; i++) {
-        no_optimization_move();
+        linked_move();
         write_to_file(i);
-        
     }
 }
