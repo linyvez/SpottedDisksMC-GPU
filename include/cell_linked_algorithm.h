@@ -1,6 +1,3 @@
-//
-// Created by Андрій Білий on 25.02.2025.
-//
 
 #ifndef CELL_LINKED_ALGORITHM_H
 #define CELL_LINKED_ALGORITHM_H
@@ -11,13 +8,13 @@
 #define My ((int)(Ly / CELL_SIZE))
 #define NUM_CELLS (Mx * My)
 
-Particle particles[N];
-int head[NUM_CELLS];
-int list[N];
+extern int head[];  // Declare, but do not define
+extern Particle particles[];
+extern int list[];
 
 
 int get_cell_index(double x, double y);
 int is_overlapping_algo(Particle particle, int num_particles);
 void insert_particle_in_cell(int p_index, Particle particle);
-
+void generate_random_algo();
 #endif //CELL_LINKED_ALGORITHM_H
