@@ -9,6 +9,10 @@
 #define My ((int)(Ly / CELL_SIZE))
 #define NUM_CELLS (Mx * My)
 
+
+// maximum number of particles in a cell
+
+
 extern int particles_idx[];
 extern Particle particles[];
 extern int parts_in_cells[][4];
@@ -19,4 +23,5 @@ int is_overlapping_algo(Particle particle);
 int insert_particle_in_cell(int p_index, Particle particle);
 void move_particle(int p_index, double newX, double newY);
 void generate_random_algo();
+void initialize_cells();
 #endif //CELL_LINKED_ALGORITHM_H

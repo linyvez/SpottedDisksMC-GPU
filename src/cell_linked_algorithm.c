@@ -29,7 +29,7 @@ int is_overlapping_algo(Particle particle) {
     int cell = get_cell_index(particle.x, particle.y);
 
     int ix = cell % Mx;
-    int iy = cell / My;
+    int iy = cell / Mx;
     
     for (int dx = -1; dx <= 1; dx++) {
         for (int dy = -1; dy <= 1; dy++) {
@@ -77,7 +77,7 @@ int insert_particle_in_cell(int p_index, Particle particle) {
 // remove -> check -> accept -> insert into new position
 //                    reject -> insert into old position
 void move_particle(int p_index, double newX, double newY) {
-    Particle p = particles[p_index];
+    Particle *p = &particles[p_index];
     int oldCell = particles_idx[p_index];
 
     // remove
@@ -89,19 +89,19 @@ void move_particle(int p_index, double newX, double newY) {
         }
     }
 
-    double oldX = p.x;
-    double oldY = p.y;
+    double oldX = p->x;
+    double oldY = p->y;
 
 
-    p.x = newX;
-    p.y = newY;
+    p->x = newX;
+    p->y = newY;
     // check
-    if (is_overlapping_algo(p)) {
+    if (is_overlapping_algo(*p)) {
         // reject
-        p.x = oldX;
-        p.y = oldX;
+        p->x = oldX;
+        p->y = oldY;
     }
-    insert_particle_in_cell(p_index, p);
+    insert_particle_in_cell(p_index, *p);
 }
 
 

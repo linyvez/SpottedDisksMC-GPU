@@ -118,7 +118,7 @@ int main() {
     generate_random_algo();
     write_to_file(0);
     for (int i = 1; i < frame_count; i++) {
-        no_optimization_move();
+        move_linked();
         write_to_file(i);
     }
 }
