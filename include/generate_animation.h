@@ -4,6 +4,8 @@
 #define kB  1.0
 #define T   0.1
 
+#define MAX_DISPLACEMENT    1
+
 
 #include "cell_linked_algorithm.h"
 

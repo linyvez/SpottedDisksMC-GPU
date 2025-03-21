@@ -1,9 +1,9 @@
 #ifndef GENERATE_CONFIG_H
 #define GENERATE_CONFIG_H
 
-#define N 50
-#define Lx 10
-#define Ly 10
+#define N 100
+#define Lx 15
+#define Ly 15
 #define SIGMA 1.0
 
 #include <stdio.h>
@@ -11,9 +11,11 @@
 #include <math.h>
 #include <time.h>
 
+// add patches here
 typedef struct Particle
 {
     double x, y;
+    // int cell;
 } Particle;
 
 int is_overlaping(Particle particle, Particle particles[], int n);

@@ -9,13 +9,13 @@
 #define My ((int)(Ly / CELL_SIZE))
 #define NUM_CELLS (Mx * My)
 
-extern int head[];  // Declare, but do not define
+extern int particles_idx[];
 extern Particle particles[];
-extern int list[];
+extern int parts_in_cells[][4];
 
 
 int get_cell_index(double x, double y);
 int is_overlapping_algo(Particle particle);
-void insert_particle_in_cell(int p_index, Particle particle);
+int insert_particle_in_cell(int p_index, Particle particle);
 void generate_random_algo();
 #endif //CELL_LINKED_ALGORITHM_H

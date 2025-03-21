@@ -9,7 +9,18 @@ double random_uniform() {
     return ((double)rand()/RAND_MAX);
 }
 
-
+int is_overlaping2(int i) {
+    for (int j = 0; j < N; j++) {
+        if (j == i) continue;
+        double x_diff = particles[i].x - particles[j].x;
+        double y_diff = particles[i].y - particles[j].y;
+        double distance = sqrt(x_diff*x_diff + y_diff*y_diff);
+        if (distance < SIGMA) {
+            return 1;
+        }
+    }
+    return 0;
+}
 
 void write_to_file(int frame_number) {
     char filename[20];
@@ -44,17 +55,26 @@ void no_optimization_move() {
         double x0 = particles[i].x;
         double y0 = particles[i].y;
 
-        double x1 = fabs(x0 + random_uniform() - 0.5);
-        double y1 = fabs(y0 + random_uniform() - 0.5);
+        // radius: vector + distance
+        double x1 = x0 + MAX_DISPLACEMENT * (random_uniform() - 0.5);
+        double y1 = y0 + MAX_DISPLACEMENT * (random_uniform() - 0.5);
 
-        double w = exp(-(calculate_energy(x1,y1)-calculate_energy(x0, y0))/kB*T);
-        if (w > 1) w = 1;
+        x1 = (x1 > Lx) ? Lx : x1;
+        y1 = (y1 > Ly) ? Ly : y1;
+        // double w = exp(-(calculate_energy(x1,y1)-calculate_energy(x0, y0))/kB*T);
+        // if (w > 1) w = 1;
+        double w = 1;
 
-        if ((random_uniform() < w)) {
+        // if ((random_uniform() < w)) {
             // accept
-            particles[i].x = x1;
-            particles[i].y = y1;
+        particles[i].x = x1;
+        particles[i].y = y1;
+        if (is_overlaping2(i)) {
+            particles[i].x = x0;
+            particles[i].y = y0;
         }
+            
+        // }
     }
 }
 
@@ -100,7 +120,7 @@ int main() {
     generate_random_algo();
     write_to_file(0);
     for (int i = 1; i < frame_count; i++) {
-        linked_move();
+        no_optimization_move();
         write_to_file(i);
     }
 }
