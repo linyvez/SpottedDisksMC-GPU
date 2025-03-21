@@ -29,7 +29,7 @@ int is_overlapping_algo(Particle particle) {
     int cell = get_cell_index(particle.x, particle.y);
 
     int ix = cell % Mx;
-    int iy = cell % My;
+    int iy = cell / My;
     
     for (int dx = -1; dx <= 1; dx++) {
         for (int dy = -1; dy <= 1; dy++) {
@@ -43,7 +43,6 @@ int is_overlapping_algo(Particle particle) {
             for (int j = 0; j < 4; j++) {
                 int p_i = parts_in_cells[ncell][j];
                 if (p_i == -1) {
-                    printf("hello world");
                     continue;
                 };
 
@@ -64,24 +63,52 @@ int is_overlapping_algo(Particle particle) {
 int insert_particle_in_cell(int p_index, Particle particle) {
     int cell = get_cell_index(particle.x, particle.y);
 
-    // particles_idx[p_index] = parts_in_cells[cell];
-    // for (int i = 0; i < 4; i++) 
-    //     if (!parts_in_cells[cell][i]) parts_in_cells[cell][i] = p_index;
-    
-    
     // find free place in the cell
     for (int i = 0; i < 4; i++) {
         if (parts_in_cells[cell][i] == -1) {
             parts_in_cells[cell][i] = p_index;
             particles_idx[p_index] = cell;
+            break;
         }
     }
+}
+
+
+// remove -> check -> accept -> insert into new position
+//                    reject -> insert into old position
+void move_particle(int p_index, double newX, double newY) {
+    Particle p = particles[p_index];
+    int oldCell = particles_idx[p_index];
+
+    // remove
+    for (int i = 0; i < 4; i++) {
+        if (parts_in_cells[oldCell][i] == p_index) {
+            parts_in_cells[oldCell][i] = -1;
+            particles_idx[p_index] = -1;
+            break;
+        }
+    }
+
+    double oldX = p.x;
+    double oldY = p.y;
+
+
+    p.x = newX;
+    p.y = newY;
+    // check
+    if (is_overlapping_algo(p)) {
+        // reject
+        p.x = oldX;
+        p.y = oldX;
+    }
+    insert_particle_in_cell(p_index, p);
 }
 
 
 
 
 void generate_random_algo() {
+    initialize_cells();
     int count = 0;
 
     // for (int i = 0; i < NUM_CELLS; i++) {

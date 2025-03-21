@@ -1,9 +1,9 @@
 #ifndef GENERATE_CONFIG_H
 #define GENERATE_CONFIG_H
 
-#define N 100
-#define Lx 15
-#define Ly 15
+#define N 1000
+#define Lx 50
+#define Ly 50
 #define SIGMA 1.0
 
 #include <stdio.h>

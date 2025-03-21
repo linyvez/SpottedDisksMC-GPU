@@ -9,6 +9,7 @@ double random_uniform() {
     return ((double)rand()/RAND_MAX);
 }
 
+//  remove this
 int is_overlaping2(int i) {
     for (int j = 0; j < N; j++) {
         if (j == i) continue;
@@ -90,30 +91,27 @@ void randomize_coordinates(Particle particle) {
     particle.y = y1;
 }
 
-
-// optimized using linked cell algorithm
-void linked_move() {
+void move_linked() {
     for (int i = 0; i < N; i++) {
         double x0 = particles[i].x;
         double y0 = particles[i].y;
 
-        // the coordinates do not change here... .... ....
-        while(is_overlapping_algo(particles[i])) {
-            printf("Particle %d: x = %f, y = %f\n", i, particles[i].x, particles[i].y);
-            randomize_coordinates(particles[i]);
-        }
+        double x1 = x0 + MAX_DISPLACEMENT * (random_uniform() - 0.5);
+        double y1 = y0 + MAX_DISPLACEMENT * (random_uniform() - 0.5);
 
-        double w = exp(-(calculate_energy(particles[i].x,particles[i].y)-calculate_energy(x0, y0))/kB*T);
-        if (w > 1) w = 1;
+        // check if we haven't exceeded border
+        x1 = (x1 > Lx) ? Lx : x1;
+        y1 = (y1 > Ly) ? Ly : y1;
 
-        if ((random_uniform() > w)) {
-            // reject
-            particles[i].x = x0;
-            particles[i].y = y0;
-        }
+        x1 = (x1 < 0) ? 0 : x1;
+        y1 = (y1 < 0) ? 0 : y1;
+
+        double w = 1;
+
+        move_particle(i, x1, y1);
+
     }
 }
-
 
 int main() {
     int frame_count = 50;

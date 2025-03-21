@@ -17,5 +17,6 @@ extern int parts_in_cells[][4];
 int get_cell_index(double x, double y);
 int is_overlapping_algo(Particle particle);
 int insert_particle_in_cell(int p_index, Particle particle);
+void move_particle(int p_index, double newX, double newY);
 void generate_random_algo();
 #endif //CELL_LINKED_ALGORITHM_H
