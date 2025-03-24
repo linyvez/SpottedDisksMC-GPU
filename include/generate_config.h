@@ -1,7 +1,7 @@
 #ifndef GENERATE_CONFIG_H
 #define GENERATE_CONFIG_H
 
-#define N 10000
+#define N 9999
 #define Lx 200
 #define Ly 200
 #define SIGMA 1.0

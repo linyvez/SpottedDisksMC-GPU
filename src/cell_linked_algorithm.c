@@ -68,8 +68,11 @@ int insert_particle_in_cell(int p_index, Particle particle) {
         if (parts_in_cells[cell][i] == -1) {
             parts_in_cells[cell][i] = p_index;
             particles_idx[p_index] = cell;
+            particles[p_index] = particle;
+            // printf("Inserted particle #%d (%f, %f) in cell #%d\n", p_index, particles[p_index].x,particles[p_index].y,particles_idx[p_index]);
             break;
         }
+        if (i == 3) printf("Failed to insert particle!");
     }
 }
 

@@ -8,6 +8,7 @@
 
 
 #include "cell_linked_algorithm.h"
+#include "periodic_boundary.h"
 
 double calculate_energy(double x, double y);
 double random_uniform();

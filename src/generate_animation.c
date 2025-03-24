@@ -114,10 +114,20 @@ void move_linked() {
 }
 
 int main() {
-    int frame_count = 50;
-    generate_random_algo();
+    int frame_count = 25;
+    clock_t start, end;
+    double cpu_time_used;
+   
+    start = clock();
+    generate_random_with_pbc(2);
+    // generate_random_algo();
+    end = clock();
+    cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Time taken: %f s\n", cpu_time_used);
+
     write_to_file(0);
-    for (int i = 1; i < frame_count; i++) {
+
+    for (int i = 1; i <= frame_count; i++) {
         move_linked();
         write_to_file(i);
     }

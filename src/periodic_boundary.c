@@ -1,116 +1,108 @@
-// #include "periodic_boundary.h"
+#include "periodic_boundary.h"
+
+double distance(Particle p1, Particle p2) {
+    double dx = fabs(p1.x - p2.x);
+    double dy = fabs(p1.y - p2.y);
+
+    if (dx > Lx / 2) dx = Lx - dx;
+    if (dy > Ly / 2) dy = Ly - dy;
+
+    return sqrt(dx * dx + dy * dy);
+}
+
+int is_near_boundary(Particle p) {
+    double left_edge = Lx / 3;
+    double right_edge = 2 * (Lx / 3);
+    double bottom_edge = Ly / 3;
+    double top_edge = 2 * (Ly / 3);
+
+    return (fabs(p.x - left_edge) <= SIGMA / 2 || fabs(p.x - right_edge) <= SIGMA / 2 ||
+            fabs(p.y - bottom_edge) <= SIGMA / 2 || fabs(p.y - top_edge) <= SIGMA / 2);
+}
+
+int check_overlap(Particle copy, int n) {
+    for (int j = 0; j < n; j++) {
+        Particle *neighbor = &particles[j];
+
+        if ((fabs(neighbor->x - copy.x) <= SIGMA) || (fabs(neighbor->y - copy.y) <= SIGMA)) {
+            if (distance(copy, *neighbor) < SIGMA) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void apply_periodic_boundary(int *n, int mode) {
+    int original_count = *n;
+
+    for (int i = 0; i < original_count; i++) {
+        Particle *p = &particles[i];
+
+        if (mode == 2) {
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dy = -1; dy <= 1; dy++) {
+                    if (dx == 0 && dy == 0) continue;
+
+                    Particle copy = *p;
+                    copy.x += dx * (Lx / 3);
+                    copy.y += dy * (Ly / 3);
+
+                    if (*n >= N) {
+                        printf("Reached max number of particles, can't add more.\n");
+                        return;
+                    }
+
+                    if (is_near_boundary(*p) && is_overlapping_algo(copy)) {
+                        // printf("Skip: (%f, %f)\n", copy.x, copy.y);
+                        continue;
+                    }
+
+                    particles[(*n)++] = copy;
+                    insert_particle_in_cell(*n-1, copy);
+                }
+            }
+        }
+    }
+}
 
 
-//  void apply_periodic_boundary(double *dx, double *dy) {
-//      if (*dx >  0.5 * X_SIZE) *dx -= X_SIZE;
-//      if (*dx <= -0.5 * X_SIZE) *dx += X_SIZE;
-//      if (*dy >  0.5 * Y_SIZE) *dy -= Y_SIZE;
-//      if (*dy <= -0.5 * Y_SIZE) *dy += Y_SIZE;
-//  }
+void generate_random_with_pbc(int mode) {
+    initialize_cells();
+    // Particle particles[N];
+    int count = 0;
+    int max_attempts = 50;
+    int attempts = 0;
 
-//  int check_overlap_circle(double x, double y, int count) {
-//      for (int i = 0; i < count; i++) {
-//          double dx = x - particles[i].x;
-//          double dy = y - particles[i].y;
-//          apply_periodic_boundary(&dx, &dy);
-//          double distance = sqrt(dx * dx + dy * dy);
-//          if (distance < SIGMA) return 1;
-//      }
-//      return 0;
-//  }
+    srand((unsigned)time(NULL));
 
-//  void generate_particles_circle() {
-//      srand(time(NULL));
-//      int count = 0;
-//      double cell_width = X_SIZE / GRID_SIZE;
-//      double cell_height = Y_SIZE / GRID_SIZE;
-
-//      for (int gx = 0; gx < GRID_SIZE; gx++) {
-//          for (int gy = 0; gy < GRID_SIZE; gy++) {
-//              if (count >= N) return;
-
-//              double x = (gx + 0.5) * cell_width + ((double)rand() / RAND_MAX - 0.5) * cell_width;
-//              double y = (gy + 0.5) * cell_height + ((double)rand() / RAND_MAX - 0.5) * cell_height;
-
-//              for (int dx = -1; dx <= 1; dx++) {
-//                  for (int dy = -1; dy <= 1; dy++) {
-//                      double new_x = x + dx * cell_width;
-//                      double new_y = y + dy * cell_height;
-//                      apply_periodic_boundary(&new_x, &new_y);
-//                      if (!check_overlap_circle(new_x, new_y, count)) {
-//                          particles[count].x = new_x;
-//                          particles[count].y = new_y;
-//                          count++;
-//                      }
-//                  }
-//              }
-//          }
-//      }
-//  }
+    double region_width = Lx / 3.0 - SIGMA;
+    double region_height = Ly / 3.0 - SIGMA;
+    double offset_x = (Lx - region_width) / 2.0;
+    double offset_y = (Ly - region_height) / 2.0;
 
 
-// int check_overlap_sq(double x, double y, int count) {
-//      for (int i = 0; i < count; i++) {
-//          double dx = x - particles[i].x;
-//          double dy = y - particles[i].y;
-//          apply_periodic_boundary(&dx, &dy);
+    while (count < N / 9.0) {
+        Particle particle;
+        particle.x = ((double)rand() / RAND_MAX) * region_width + offset_x;
+        particle.y = ((double)rand() / RAND_MAX) * region_height + offset_y;
 
-//          double distance = sqrt(dx * dx + dy * dy);
-//          if (distance < 2 * RADIUS) {
-//              return 1;
-//          }
-//      }
-//      return 0;
-//  }
+        if (!is_overlapping_algo(particle)) {
+            particles[count] = particle;
+            insert_particle_in_cell(count++, particle);
+            attempts = 0;
+        } else {
+            attempts++;
+        }
 
-// void generate_particles_sq() {
-//      srand(time(NULL));
-//      int count = 0;
-//      double cell_width = X_SIZE / GRID_SIZE;
-//      double cell_height = Y_SIZE / GRID_SIZE;
+        if (attempts >= max_attempts) {
+            printf("Max attempts reached, stopping particle generation.\n");
+            break;
+        }
+    }
 
-//      for (int gx = 0; gx < GRID_SIZE; gx++) {
-//          for (int gy = 0; gy < GRID_SIZE; gy++) {
-//              if (count >= N) return;
+    printf("Generated %d particles in the central region\n", count);
 
-//              double x = (gx + 0.5) * cell_width + ((double)rand() / RAND_MAX - 0.5) * cell_width;
-//              double y = (gy + 0.5) * cell_height + ((double)rand() / RAND_MAX - 0.5) * cell_height;
+    apply_periodic_boundary(&count, mode);
 
-//              for (int dx = -1; dx <= 1; dx++) {
-//                  for (int dy = -1; dy <= 1; dy++) {
-//                      double new_x = x + dx * cell_width;
-//                      double new_y = y + dy * cell_height;
-//                      apply_periodic_boundary(&new_x, &new_y);
-//                      if (!check_overlap_sq(new_x, new_y, count)) {
-//                          particles[count].x = new_x;
-//                          particles[count].y = new_y;
-//                          count++;
-//                      }
-//                  }
-//              }
-//          }
-//      }
-//  }
-
-//  void save_circle_to_file(const char *filename) {
-//      FILE *file = fopen(filename, "w");
-//      if (!file) {
-//          perror("Failed to open file for writing");
-//          return;
-//      }
-//      fprintf(file, "%d\n", N);
-//      fprintf(file, "Properties=pos:R:2\n");
-//      for (int i = 0; i < N; i++) {
-//          fprintf(file, "%.6f %.6f\n", particles[i].x, particles[i].y);
-//      }
-//      fclose(file);
-//  }
-
-//  // int main() {
-//  //     generate_particles_circle();
-//  //     save_circle_to_file("particles_circle.xyz");
-//  //
-//  //     generate_particles_sq();
-//  //     save_circle_to_file("particles_sqare.xyz");
-//  //     return 0;
-//  // }
+}

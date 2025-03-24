@@ -1,20 +1,12 @@
-// #ifndef PERIODIC_BOUNDARY_H
-// #define PERIODIC_BOUNDARY_H
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <math.h>
-// #include <time.h>
+#ifndef PERIODIC_BOUNDARY_H
+#define PERIODIC_BOUNDARY_H
 
-// #define N 2000
-// #define X_SIZE 50.0
-// #define Y_SIZE 50.0
-// #define SIGMA 1.0
-// #define SQUARE_SIZE 1.0
-// #define RADIUS (SQUARE_SIZE / sqrt(2))
-// #define GRID_SIZE 10.0
-// // typedef struct Particle
-// // {
-// //     double x, y;
-// // } Particle;
-// // Particle particles[N];
-// #endif //PERIODIC_BOUNDARY_H
+#include "generate_config.h"
+#include "cell_linked_algorithm.h"
+
+double distance(Particle p1, Particle p2);
+int is_near_boundary(Particle p);
+int check_overlap(Particle copy, int n);
+void apply_periodic_boundary(int *n, int mode);
+void generate_random_with_pbc(int mode);
+#endif
