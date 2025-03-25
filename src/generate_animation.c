@@ -31,6 +31,7 @@ void write_to_file(int frame_number) {
         printf("Error while opening file\n");
         return;
     }
+    fprintf(config, "CRYST1 200.000 200.000 1.000 90.00 90.00 90.00 P 1\n");
 
     for (int i = 0; i < N; i++) {
         fprintf(config, "ATOM  %5d %-4s %-3s %1s%4d    %8.3f%8.3f%8.3f  1.00  0.00\n",
@@ -100,11 +101,11 @@ void move_linked() {
         double y1 = y0 + MAX_DISPLACEMENT * (random_uniform() - 0.5);
 
         // check if we haven't exceeded border
-        x1 = (x1 > Lx) ? Lx : x1;
-        y1 = (y1 > Ly) ? Ly : y1;
+        x1 = (x1 > Lx) ? x1-Lx : x1;
+        y1 = (y1 > Ly) ? y1-Ly : y1;
 
-        x1 = (x1 < 0) ? 0 : x1;
-        y1 = (y1 < 0) ? 0 : y1;
+        x1 = (x1 < 0) ? x1+Lx : x1;
+        y1 = (y1 < 0) ? y1+Lx : y1;
 
         double w = 1;
 
@@ -193,12 +194,13 @@ void move_linked_periodic() {
 
 
 int main() {
-    int frame_count = 10;
+    int frame_count = 60;
     clock_t start, end;
     double cpu_time_used;
    
     start = clock();
-    generate_random_with_pbc(2);
+    // generate_random_with_pbc(2);
+    generate_random_algo();
     // generate_random_algo();
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
@@ -207,7 +209,7 @@ int main() {
     write_to_file(0);
 
     for (int i = 1; i <= frame_count; i++) {
-        move_linked_periodic();
+        move_linked();
         write_to_file(i);
     }
 }
