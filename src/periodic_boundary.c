@@ -54,12 +54,12 @@ void apply_periodic_boundary(int *n, int mode) {
                     }
 
                     if (is_near_boundary(*p) && is_overlapping_algo(copy)) {
-                        // printf("Skip: (%f, %f)\n", copy.x, copy.y);
+                        printf("Skip: (%f, %f)\n", copy.x, copy.y);
                         continue;
                     }
 
                     particles[(*n)++] = copy;
-                    insert_particle_in_cell(*n-1, copy);
+                    insert_particle_in_cell(*n-1, &copy);
                 }
             }
         }
@@ -67,12 +67,13 @@ void apply_periodic_boundary(int *n, int mode) {
 }
 
 
+
 void generate_random_with_pbc(int mode) {
     initialize_cells();
-    // Particle particles[N];
+    // 1. Generate the center cell
     int count = 0;
-    int max_attempts = 50;
-    int attempts = 0;
+    // int attempts = 0;
+    // int max_attempts = 3000;
 
     srand((unsigned)time(NULL));
 
@@ -82,23 +83,25 @@ void generate_random_with_pbc(int mode) {
     double offset_y = (Ly - region_height) / 2.0;
 
 
-    while (count < N / 9.0) {
+    while (count < ceil(N / 9.0)) {
         Particle particle;
         particle.x = ((double)rand() / RAND_MAX) * region_width + offset_x;
         particle.y = ((double)rand() / RAND_MAX) * region_height + offset_y;
 
+
         if (!is_overlapping_algo(particle)) {
             particles[count] = particle;
-            insert_particle_in_cell(count++, particle);
-            attempts = 0;
-        } else {
-            attempts++;
-        }
+            insert_particle_in_cell(count, &particle);
+            count++;}
+            // attempts = 0;
+        // } else {
+        //     attempts++;
+        // }
 
-        if (attempts >= max_attempts) {
-            printf("Max attempts reached, stopping particle generation.\n");
-            break;
-        }
+        // if (attempts >= max_attempts) {
+        //     printf("Max attempts reached, stopping particle generation.\n");
+        //     break;
+        // }
     }
 
     printf("Generated %d particles in the central region\n", count);

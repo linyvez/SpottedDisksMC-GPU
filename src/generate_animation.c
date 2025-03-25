@@ -113,8 +113,87 @@ void move_linked() {
     }
 }
 
+void move_linked_periodic() {
+    
+    double region_width = Lx / 3.0 - SIGMA;
+    double region_height = Ly / 3.0 - SIGMA;
+    double offset_x = (Lx - region_width) / 2.0;
+    double offset_y = (Ly - region_height) / 2.0;
+
+    int count = ceil(N / 9.0);
+    for (int i = 0; i < count; i++) {
+        double x0 = particles[i].x;
+        double y0 = particles[i].y;
+
+        double x1 = x0 + MAX_DISPLACEMENT * (random_uniform() - 0.5);
+        double y1 = y0 + MAX_DISPLACEMENT * (random_uniform() - 0.5);
+
+        
+        // checking if it is the center square
+        if (x0 >= offset_x && x0 <= offset_x + region_width &&
+            y0 >= offset_y && y0 <= offset_y + region_height) {
+                
+            }
+        else {
+            printf("I am not a center square and i should not be here\n");
+        }
+
+        // check if we haven't exceeded border
+        x1 = (x1 > offset_x+region_width) ? offset_x+region_width : x1;
+        y1 = (y1 > offset_y+region_height) ? offset_y+region_height : y1;
+
+        x1 = (x1 < offset_x) ? offset_x : x1;
+        y1 = (y1 < offset_y) ? offset_y : y1;
+
+        double w = 1;
+
+        move_particle(i, x1, y1);
+    }
+
+    printf("----------------Finished moving the center cells.----------------\n");
+    // copy the movement using periodic boundary conditions
+    int k = (N - count)/8; //number of particles in non-center cells
+    int current_square = 0;
+    int current_p = 0;
+    
+    double width = Lx/3;
+    double height = Ly/3;
+
+    for (int i = count; i < N; i++) {
+        
+        
+        if (current_square == 0) {
+            move_particle(i, particles[current_p].x-width, particles[current_p].y-height);
+        }
+        else if (current_square == 1) {
+            move_particle(i, particles[current_p].x-width, particles[current_p].y);
+        }
+        else if (current_square == 2) {
+            move_particle(i, particles[current_p].x-width, particles[current_p].y+height);
+        }
+        else if (current_square == 3) {
+            move_particle(i, particles[current_p].x, particles[current_p].y-height);
+        }
+        else if (current_square == 4) {
+            move_particle(i, particles[current_p].x, particles[current_p].y+height);
+        }
+        else if (current_square == 5) {
+            move_particle(i, particles[current_p].x+width, particles[current_p].y-height);
+        }
+        else if (current_square == 6) {
+            move_particle(i, particles[current_p].x+width, particles[current_p].y);
+        }
+        else {
+            move_particle(i, particles[current_p].x+width, particles[current_p].y+height);
+        }
+        current_square = (current_square + 1)%8;
+        current_p = (i - count) / 8;
+    } 
+}
+
+
 int main() {
-    int frame_count = 25;
+    int frame_count = 10;
     clock_t start, end;
     double cpu_time_used;
    
@@ -128,7 +207,7 @@ int main() {
     write_to_file(0);
 
     for (int i = 1; i <= frame_count; i++) {
-        move_linked();
+        move_linked_periodic();
         write_to_file(i);
     }
 }

@@ -60,19 +60,19 @@ int is_overlapping_algo(Particle particle) {
 }
 
 
-int insert_particle_in_cell(int p_index, Particle particle) {
-    int cell = get_cell_index(particle.x, particle.y);
+int insert_particle_in_cell(int p_index, Particle *particle) {
+    int cell = get_cell_index(particle->x, particle->y);
 
     // find free place in the cell
     for (int i = 0; i < 4; i++) {
         if (parts_in_cells[cell][i] == -1) {
             parts_in_cells[cell][i] = p_index;
             particles_idx[p_index] = cell;
-            particles[p_index] = particle;
+            particles[p_index] = *particle;
             // printf("Inserted particle #%d (%f, %f) in cell #%d\n", p_index, particles[p_index].x,particles[p_index].y,particles_idx[p_index]);
             break;
         }
-        if (i == 3) printf("Failed to insert particle!");
+        // if (i == 3) printf("Failed to insert particle (%f, %f)\n", particle->x, particle->y);
     }
 }
 
@@ -98,13 +98,18 @@ void move_particle(int p_index, double newX, double newY) {
 
     p->x = newX;
     p->y = newY;
+    // printf("move: (%f, %f) --> (%f, %f)\n", oldX, oldY, newX, newY);
     // check
     if (is_overlapping_algo(*p)) {
         // reject
         p->x = oldX;
         p->y = oldY;
+        // printf("rejected.\n");
     }
-    insert_particle_in_cell(p_index, *p);
+    else {
+        // printf("accepted.\n");
+    }
+    insert_particle_in_cell(p_index, p);
 }
 
 
@@ -127,7 +132,7 @@ void generate_random_algo() {
 
         if (!is_overlapping_algo(particle)) {
             particles[count] = particle;
-            insert_particle_in_cell(count, particle);
+            insert_particle_in_cell(count, &particle);
             count++;
         }
     }
