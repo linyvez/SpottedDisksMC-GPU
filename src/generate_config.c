@@ -53,28 +53,20 @@ void generate_random() {
     fclose(config);
 }
 
-
 void generate_random_with_pbc(int mode) {
     Particle particles[N];
     int count = 0;
-    int max_attempts = 50;
+    int max_attempts = 10000;
     int attempts = 0;
-
     srand((unsigned)time(NULL));
 
-    double region_width = Lx / 3.0;
-    double region_height = Ly / 3.0;
-    double offset_x = (Lx - region_width) / 2.0;
-    double offset_y = (Ly - region_height) / 2.0;
+    while (count < N) {
+        Particle p;
+        p.x = ((double)rand() / RAND_MAX) * Lx;
+        p.y = ((double)rand() / RAND_MAX) * Ly;
 
-
-    while (count < N / 9.0) {
-        Particle particle;
-        particle.x = ((double)rand() / RAND_MAX) * region_width + offset_x;
-        particle.y = ((double)rand() / RAND_MAX) * region_height + offset_y;
-
-        if (!is_overlaping(particle, particles, count)) {
-            particles[count++] = particle;
+        if (!is_overlapping_pbc(p, particles, count)) {
+            particles[count++] = p;
             attempts = 0;
         } else {
             attempts++;
@@ -86,11 +78,9 @@ void generate_random_with_pbc(int mode) {
         }
     }
 
-    printf("Generated %d particles in the central region\n", count);
+    printf("Generated %d particles\n", count);
 
-    apply_periodic_boundary(particles, &count, mode);
-
-    FILE *config = fopen("configuration_pbc.pdb", "w");
+    FILE *config = fopen("configuration_pbc.xyz", "w");
     if (config == NULL) {
         printf("Error while opening file\n");
         return;
@@ -100,10 +90,8 @@ void generate_random_with_pbc(int mode) {
         fprintf(config, "ATOM  %5d %-4s %-3s %1s%4d    %8.3f%8.3f%8.3f  1.00  0.00\n",
                 i + 1, "ATOM", "RES", "A", 1, particles[i].x, particles[i].y, 0.0);
     }
-
     fclose(config);
 }
-
 
 
 int main(int argc, char *argv[]) {
