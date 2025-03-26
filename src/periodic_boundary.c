@@ -1,6 +1,6 @@
 #include "periodic_boundary.h"
 
-BoundaryCondition boundary_condition = PERIODIC_BOTH;
+BoundaryCondition boundary_condition = NO_BOUNDARY;
 
 void set_condition(BoundaryCondition condition) {
     boundary_condition = condition;
