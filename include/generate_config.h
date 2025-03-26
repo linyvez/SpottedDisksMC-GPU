@@ -1,4 +1,4 @@
-#define N 300
+#define N 400
 #define Lx 24.0
 #define Ly 24.0
 #define SIGMA 1.0
