@@ -53,7 +53,7 @@ void generate_random() {
     fclose(config);
 }
 
-void generate_random_with_pbc(int mode) {
+void generate_random_with_pbc() {
     Particle particles[N];
     int count = 0;
     int max_attempts = 10000;
@@ -102,15 +102,17 @@ int main(int argc, char *argv[]) {
     }
 
     int mode = atoi(argv[1]);
-    if (mode < 0 || mode > 2) {
+    if (mode < 0 || mode > 3) {
         printf("Invalid mode. Choose 0, 1, or 2.\n");
         return 1;
     }
     start = clock();
-    generate_random_with_pbc(mode);
+    set_condition(mode);
+    generate_random_with_pbc();
     // generate_random();
     end = clock();
     cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
     printf("Time taken: %f s\n", cpu_time_used);
     return 0;
 }
+
