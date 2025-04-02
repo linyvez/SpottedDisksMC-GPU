@@ -1,12 +1,20 @@
 #ifndef PERIODIC_BOUNDARY_H
 #define PERIODIC_BOUNDARY_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
 
-#include "generate_config.h"
-#include "cell_linked_algorithm.h"
+typedef enum
+{
+    NO_BOUNDARY = 0,
+    PERIODIC_X = 1,
+    PERIODIC_Y = 2,
+    PERIODIC_BOTH = 3
+} BoundaryCondition;
 
-double distance(Particle p1, Particle p2);
-int is_near_boundary(Particle p);
-int check_overlap(Particle copy, int n);
-void apply_periodic_boundary(int *n, int mode);
-void generate_random_with_pbc(int mode);
-#endif
+extern BoundaryCondition boundary_condition;
+
+void periodic_boundary(double *dx, double *dy);
+void set_condition(BoundaryCondition condition);
+#endif // PERIODIC_BOUNDARY_H
