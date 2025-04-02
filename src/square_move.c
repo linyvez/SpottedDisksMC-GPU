@@ -83,7 +83,6 @@ double compute_patch_energy(const SquareParticle sp, int self_idx)
 
         sum += compute_patch_interaction(squares[neighbor_idx], sp);
     }
-    printf("%lf\n", sum);
     return sum;
 }
 
