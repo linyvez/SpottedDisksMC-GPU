@@ -1,0 +1,1 @@
+This directory contains files with information about the particles. You can then use this file to visualize the movement of particles using a third-party program, for example, Ovito.
