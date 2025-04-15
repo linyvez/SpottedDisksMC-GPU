@@ -1,6 +1,8 @@
 #include "square_config.h"
 #include "square_move.h"
 #include "periodic_boundary.h"
+#include "circle_config.h"
+#include "circle_move.h"
 
 int main(int argc, char *argv[])
 {   

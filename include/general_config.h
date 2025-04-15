@@ -8,8 +8,8 @@
 #include "periodic_boundary.h"
 
 #define N 300
-#define Lx 25
-#define Ly 25
+#define Lx 25.0
+#define Ly 25.0
 
 #define MAX_ATTEMPTS 100
 #define ANIMATION_STEPS 200

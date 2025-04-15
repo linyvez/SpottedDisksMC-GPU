@@ -61,7 +61,7 @@ int is_overlapping_circle(CircleParticle particle) {
 }
 
 
-int insert_particle_in_cell(int p_index, CircleParticle *particle) {
+void insert_particle_in_cell(int p_index, CircleParticle *particle) {
     int cell = get_cell_index(particle->x, particle->y);
 
     // find free place in the cell
@@ -167,10 +167,10 @@ int generate_random_circles() {
         }
     }
 
-    FILE *f = fopen("configuration_circle.xyz", "w");
+    FILE *f = fopen("data/configuration_circle.xyz", "w");
     if (!f) {
         printf("Error while opening configuration file\n");
-        return;
+        return 1;
     }
     printf("Number of circles laid: %d\n", count);
 
@@ -206,9 +206,9 @@ int generate_random_circles() {
                     particles[i].q[1],
                     particles[i].q[2],
                     particles[i].q[3],
-                    particles[i].patches[j].shape[0] / 2.0,
-                    particles[i].patches[j].shape[1] / 2.0,
-                    particles[i].patches[j].shape[2] / 2.0);
+                    PATCH_RADIUS_C,
+                    PATCH_RADIUS_C,
+                    PATCH_RADIUS_C);
         }
     }
 
