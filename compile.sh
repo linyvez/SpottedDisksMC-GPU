@@ -63,5 +63,5 @@ cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCMAKE_C_FLAGS="$PROFILE_FLAGS" ..
 make
 
 
-echo "Build successful! Executable located at: ./bin/aks_project"
+echo "Build successful! Executable located at: ./bin/particle_simulation"
 
