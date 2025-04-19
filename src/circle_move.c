@@ -8,7 +8,6 @@
 #include <_stdlib.h>
 
 
-
 void rotate_circle(CircleParticle *c) {
     double current_angle = 2.0 * atan2(c->q[2], c->q[3]);
     double range = ((lflag != 0) && (drand48() < LRMOVE)) ? MV_CFG->lrrotmax : MV_CFG->rrotmax;
@@ -26,7 +25,6 @@ void rotate_circle(CircleParticle *c) {
 }
 
 Coordinates calculate_new_coordinates(const CircleParticle *c) {
-
     Coordinates coordinates;
     double range = ((lflag != 0) && (drand48() < LRMOVE)) ? MV_CFG->lrdispmax : MV_CFG->rdispmax;
 

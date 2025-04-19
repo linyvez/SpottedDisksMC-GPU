@@ -5,17 +5,14 @@ BoundaryCondition boundary_condition = NO_BOUNDARY;
 
 #include <math.h>
 
-void periodic_boundary(double *dx, double *dy)
-{
-    if (boundary_condition == PERIODIC_X || boundary_condition == PERIODIC_BOTH)
-    {
+void periodic_boundary(double *dx, double *dy) {
+    if (boundary_condition == PERIODIC_X || boundary_condition == PERIODIC_BOTH) {
         *dx = fmod(*dx + 0.5 * GL_CFG->Lx, GL_CFG->Lx);
         if (*dx < 0)
             *dx += GL_CFG->Lx;
         *dx -= 0.5 * GL_CFG->Lx;
     }
-    if (boundary_condition == PERIODIC_Y || boundary_condition == PERIODIC_BOTH)
-    {
+    if (boundary_condition == PERIODIC_Y || boundary_condition == PERIODIC_BOTH) {
         *dy = fmod(*dy + 0.5 * GL_CFG->Ly, GL_CFG->Ly);
         if (*dy < 0)
             *dy += GL_CFG->Ly;
@@ -23,8 +20,7 @@ void periodic_boundary(double *dx, double *dy)
     }
 }
 
-void set_condition(BoundaryCondition condition)
-{
+void set_condition(BoundaryCondition condition) {
     boundary_condition = condition;
 }
 

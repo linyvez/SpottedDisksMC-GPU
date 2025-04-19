@@ -10,9 +10,6 @@
 #include "config.h"
 
 
-
-
-
 CircleParticle *particles = NULL;
 int *particles_idx = NULL;
 int (*parts_in_cells)[MAX_NEIGHBOURS] = NULL;
@@ -40,10 +37,9 @@ void initialize_cells() {
 }
 
 
-
 int get_cell_index(double x, double y) {
-    int ix = (int)(x / GL_CFG->particle_size);
-    int iy = (int)(y / GL_CFG->particle_size);
+    int ix = (int) (x / GL_CFG->particle_size);
+    int iy = (int) (y / GL_CFG->particle_size);
     if (ix >= CL_CFG->Mx) ix = CL_CFG->Mx - 1;
     if (iy >= CL_CFG->My) iy = CL_CFG->My - 1;
     return ix + CL_CFG->Mx * iy;
@@ -64,7 +60,6 @@ int is_overlapping_circle(CircleParticle particle) {
                     continue;
                 };
                 CircleParticle adj_p_i = adjust_circles_for_periodic(particle, particles[p_i]);
-
 
 
                 double x_diff = particle.x - adj_p_i.x;
@@ -127,9 +122,8 @@ void move_particle(int p_index, double newX, double newY) {
     insert_particle_in_cell(p_index, p);
 }
 
-void compute_circle_patch_global_position(const CircleParticle sp, const Patch patch, double *global_x, double *global_y)
-{
-
+void compute_circle_patch_global_position(const CircleParticle sp, const Patch patch, double *global_x,
+                                          double *global_y) {
     double angle = 2.0 * atan2(sp.q[2], sp.q[3]);
     double cosA = cos(angle);
     double sinA = sin(angle);
@@ -140,7 +134,7 @@ void compute_circle_patch_global_position(const CircleParticle sp, const Patch p
 
 
 int generate_random_circles() {
-    particles_idx = malloc( GL_CFG->num_particles * sizeof(int));
+    particles_idx = malloc(GL_CFG->num_particles * sizeof(int));
     if (!particles_idx) {
         print_error(true, "Failed to allocate memory for particles_idx");
         exit(EXIT_FAILURE);
@@ -171,15 +165,13 @@ int generate_random_circles() {
 
     int attempts = 0;
     while (count < GL_CFG->num_particles) {
-        if (attempts ++ > MAX_ATTEMPTS) {
+        if (attempts++ > MAX_ATTEMPTS) {
             print_error(false, "Error: Too many attempts to place a circle.\n");
             break;
         }
         CircleParticle particle;
         particle.x = drand48() * GL_CFG->Lx;
         particle.y = drand48() * GL_CFG->Ly;
-
-
 
 
         double theta = drand48() * MAX_ANGLE;
@@ -190,9 +182,7 @@ int generate_random_circles() {
 
 
         if (!is_overlapping_circle(particle)) {
-
             for (int i = 0; i < num_patches && local != NULL; i++) {
-
                 particle.patches[i].rel_x = local[i][0];
                 particle.patches[i].rel_y = local[i][1];
             }
@@ -206,7 +196,7 @@ int generate_random_circles() {
     }
 
     if (local != NULL) {
-        free((void *)local);
+        free((void *) local);
     }
 
     FILE *f = fopen("data/configuration_circle.xyz", "w");
@@ -217,10 +207,12 @@ int generate_random_circles() {
     printf("Number of circles laid: %d\n", count);
 
     fprintf(f, "%d\n", count + num_patches * count);
-    fprintf(f, "Properties=species:S:1:pos:R:3:orientation:R:4:aspherical_shape:R:3 Lattice=\"%lf 0.0 0.0 0.0 %lf 0.0 0.0 0.0 0.0001\"\n", GL_CFG->Lx, GL_CFG->Ly);
+    fprintf(
+        f,
+        "Properties=species:S:1:pos:R:3:orientation:R:4:aspherical_shape:R:3 Lattice=\"%lf 0.0 0.0 0.0 %lf 0.0 0.0 0.0 0.0001\"\n",
+        GL_CFG->Lx, GL_CFG->Ly);
 
-    for (int i = 0; i < count; i++)
-    {
+    for (int i = 0; i < count; i++) {
         fprintf(f, "B %8.3f %8.3f %8.3f  %8.3f %8.3f %8.3f %8.3f  %8.3f %8.3f %8.3f\n",
                 particles[i].x,
                 particles[i].y,
@@ -234,10 +226,8 @@ int generate_random_circles() {
                 GL_CFG->particle_size * 0.125);
     }
 
-    for (int i = 0; i < count; i++)
-    {
-        for (int j = 0; j < num_patches; j++)
-        {
+    for (int i = 0; i < count; i++) {
+        for (int j = 0; j < num_patches; j++) {
             double global_x, global_y;
             compute_circle_patch_global_position(particles[i], particles[i].patches[j], &global_x, &global_y);
             fprintf(f, "P %8.3f %8.3f %8.3f  %8.3f %8.3f %8.3f %8.3f  %8.3f %8.3f %8.3f\n",

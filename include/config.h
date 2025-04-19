@@ -17,7 +17,6 @@ typedef struct {
     double radius;
     double delta;
     double interaction;
-
 } PatchConfig;
 
 typedef struct {
@@ -43,7 +42,6 @@ extern const Config *GL_CFG;
 extern const MoveConfig *MV_CFG;
 extern const CellConfig *CL_CFG;
 extern const PatchConfig *PH_CFG;
-
 
 
 #endif //CONFIG_H

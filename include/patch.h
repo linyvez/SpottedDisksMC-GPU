@@ -9,7 +9,6 @@ typedef enum {
 } PatchType;
 
 
-
 extern PatchType patch_type;
 
 void set_patch_type(PatchType);

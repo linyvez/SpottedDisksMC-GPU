@@ -218,7 +218,6 @@ void compute_patch_global_position(const SquareParticle sp, const Patch patch, d
 }
 
 int generate_random_squares() {
-
     head = malloc(CL_CFG->num_cells * sizeof(int));
     if (!head) {
         print_error(true, "Failed to allocate memory for head");
@@ -312,7 +311,7 @@ int generate_random_squares() {
                 GL_CFG->particle_size * 0.5,
                 GL_CFG->particle_size * 0.5,
                 GL_CFG->particle_size * 0.125
-                );
+        );
     }
 
     for (int i = 0; i < totalSquares; i++) {
@@ -330,7 +329,7 @@ int generate_random_squares() {
                     PH_CFG->radius * 0.5,
                     PH_CFG->radius * 0.5,
                     PH_CFG->radius * 0.125
-                    );
+            );
         }
     }
     fclose(f);

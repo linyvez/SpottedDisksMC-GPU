@@ -4,9 +4,6 @@
 #include "square_config.h"
 
 
-
-
-
 void rotate_square(SquareParticle *sp);
 void move_square(SquareParticle *sp);
 void animate_movement(int, int);

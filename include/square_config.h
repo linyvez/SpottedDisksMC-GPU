@@ -2,8 +2,7 @@
 #define SQUARE_CONFIG_H
 #include <general_config.h>
 
-typedef struct
-{
+typedef struct {
     double x, y;
     double q[4];
 
@@ -13,8 +12,7 @@ typedef struct
     Patch patches[MAX_PATCHES];
 } SquareParticle;
 
-typedef struct
-{
+typedef struct {
     int squareIndex;
     int next;
 } Node;

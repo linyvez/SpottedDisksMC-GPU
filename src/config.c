@@ -117,7 +117,7 @@ Config config_reader(const char *filename) {
 
     fclose(fp);
 
-    #define CHECK_PARAM(x) \
+#define CHECK_PARAM(x) \
         if (config.x == -1 || config.x == -1.0) { \
         print_error(true, "Missing required config parameter: %s\n", #x); \
         exit(EXIT_FAILURE); \
@@ -160,9 +160,9 @@ void initialize_global_configs(const char *filename) {
         print_error(true, "Memory allocation failed for CellConfig");
         exit(EXIT_FAILURE);
     }
-    cl_cfg->size = config->particle_size;
-    cl_cfg->Mx = (int)(config->Lx / cl_cfg->size) + 1;
-    cl_cfg->My = (int)(config->Ly / cl_cfg->size) + 1;
+    cl_cfg->size = sqrt(2);
+    cl_cfg->Mx = ceil(config->Lx / cl_cfg->size);
+    cl_cfg->My = ceil(config->Ly / cl_cfg->size);
     cl_cfg->num_cells = cl_cfg->Mx * cl_cfg->My;
     cl_cfg->max_nodes = config->num_particles * 8;
     CL_CFG = cl_cfg;
@@ -174,6 +174,6 @@ void initialize_global_configs(const char *filename) {
     }
     ph_cfg->radius = config->particle_size / config->patch_radius_coeff;
     ph_cfg->delta = config->particle_size / 2.0;
-    ph_cfg->interaction = config->temperature  * config->particle_interact_coeff;
+    ph_cfg->interaction = config->temperature * config->particle_interact_coeff;
     PH_CFG = ph_cfg;
 }

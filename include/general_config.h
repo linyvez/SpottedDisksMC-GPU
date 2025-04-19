@@ -27,8 +27,7 @@ typedef enum {
 } ParticleType;
 
 
-typedef struct
-{
+typedef struct {
     double rel_x, rel_y;
 } Patch;
 

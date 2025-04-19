@@ -25,8 +25,10 @@ double (*assign_patch_type())[2] {
                 print_error(true, "Memory allocation failed for PATCH_TWO_CENTER");
                 exit(EXIT_FAILURE);
             }
-            local[0][0] = -PH_CFG->delta; local[0][1] = 0.0;
-            local[1][0] = PH_CFG->delta; local[1][1] = 0.0;
+            local[0][0] = -PH_CFG->delta;
+            local[0][1] = 0.0;
+            local[1][0] = PH_CFG->delta;
+            local[1][1] = 0.0;
             break;
 
         case PATCH_FOUR_CENTER:
@@ -36,10 +38,14 @@ double (*assign_patch_type())[2] {
                 print_error(true, "Memory allocation failed for PATCH_FOUR_CENTER");
                 exit(EXIT_FAILURE);
             }
-            local[0][0] = -PH_CFG->delta; local[0][1] = 0.0;
-            local[1][0] = PH_CFG->delta;  local[1][1] = 0.0;
-            local[2][0] = 0.0; local[2][1] = PH_CFG->delta;
-            local[3][0] = 0.0; local[3][1] = -PH_CFG->delta;
+            local[0][0] = -PH_CFG->delta;
+            local[0][1] = 0.0;
+            local[1][0] = PH_CFG->delta;
+            local[1][1] = 0.0;
+            local[2][0] = 0.0;
+            local[2][1] = PH_CFG->delta;
+            local[3][0] = 0.0;
+            local[3][1] = -PH_CFG->delta;
             break;
 
         case PATCH_FOUR_CORNER:
@@ -49,10 +55,14 @@ double (*assign_patch_type())[2] {
                 print_error(true, "Memory allocation failed for PATCH_FOUR_CORNER");
                 exit(EXIT_FAILURE);
             }
-            local[0][0] = -PH_CFG->delta; local[0][1] = -PH_CFG->delta;
-            local[1][0] = PH_CFG->delta;  local[1][1] = -PH_CFG->delta;
-            local[2][0] = PH_CFG->delta;  local[2][1] = PH_CFG->delta;
-            local[3][0] = -PH_CFG->delta; local[3][1] = PH_CFG->delta;
+            local[0][0] = -PH_CFG->delta;
+            local[0][1] = -PH_CFG->delta;
+            local[1][0] = PH_CFG->delta;
+            local[1][1] = -PH_CFG->delta;
+            local[2][0] = PH_CFG->delta;
+            local[2][1] = PH_CFG->delta;
+            local[3][0] = -PH_CFG->delta;
+            local[3][1] = PH_CFG->delta;
             break;
 
         default:
