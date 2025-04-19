@@ -160,7 +160,7 @@ void initialize_global_configs(const char *filename) {
         print_error(true, "Memory allocation failed for CellConfig");
         exit(EXIT_FAILURE);
     }
-    cl_cfg->size = sqrt(2);
+    cl_cfg->size = config->particle_size;
     cl_cfg->Mx = ceil(config->Lx / cl_cfg->size);
     cl_cfg->My = ceil(config->Ly / cl_cfg->size);
     cl_cfg->num_cells = cl_cfg->Mx * cl_cfg->My;
