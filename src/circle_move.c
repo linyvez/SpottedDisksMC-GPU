@@ -1,60 +1,46 @@
 #include "circle_move.h"
 
+#include <config.h>
+#include <patch.h>
+#include <periodic_boundary.h>
+#include <print_error.h>
+#include <stdio.h>
+#include <_stdlib.h>
+
+
+
 void rotate_circle(CircleParticle *c) {
     double current_angle = 2.0 * atan2(c->q[2], c->q[3]);
-    double angle = ((rand() / (double) RAND_MAX) * 2 * MAX_ROTATION_ANGLE) - MAX_ROTATION_ANGLE;
+    double range = ((lflag != 0) && (drand48() < LRMOVE)) ? MV_CFG->lrrotmax : MV_CFG->rrotmax;
+
+    double angle = drand48() * 2 * range - range;
+
+
     current_angle += angle;
     current_angle = fmod(current_angle, 2 * M_PI);
-    if (current_angle < 0) {
+    if (current_angle < 0)
         current_angle += 2 * M_PI;
-    }
+
     c->q[2] = sin(current_angle / 2);
     c->q[3] = cos(current_angle / 2);
 }
 
-Coordinates calculate_new_coordinates(CircleParticle *c) {
-    double dx = (rand() / (double) RAND_MAX) * 2 * SIGMA - SIGMA;
-    double dy = (rand() / (double) RAND_MAX) * 2 * SIGMA - SIGMA;
+Coordinates calculate_new_coordinates(const CircleParticle *c) {
+
     Coordinates coordinates;
+    double range = ((lflag != 0) && (drand48() < LRMOVE)) ? MV_CFG->lrdispmax : MV_CFG->rdispmax;
+
+    double dx = ((drand48() * 2.0) - 1.0) * range;
+    double dy = ((drand48() * 2.0) - 1.0) * range;
+
     double x = c->x + dx;
     double y = c->y + dy;
-    if (boundary_condition == NO_BOUNDARY) {
-        if (x < 0)
-            x = 0;
-        if (x > Lx)
-            x = Lx;
-        if (y < 0)
-            y = 0;
-        if (y > Ly)
-            y = Ly;
-    } else if (boundary_condition == PERIODIC_BOTH) {
-        if (x < 0)
-            x += Lx;
-        if (x > Lx)
-            x -= Lx;
-        if (y < 0)
-            y += Ly;
-        if (y > Ly)
-            y -= Ly;
-    } else if (boundary_condition == PERIODIC_X) {
-        if (x < 0)
-            x += Lx;
-        if (x > Lx)
-            x -= Lx;
-        if (y < 0)
-            y = 0;
-        if (y > Ly)
-            y = Ly;
-    } else if (boundary_condition == PERIODIC_Y) {
-        if (x < 0)
-            x = 0;
-        if (x > Lx)
-            x = Lx;
-        if (y < 0)
-            y += Ly;
-        if (y > Ly)
-            y -= Ly;
-    }
+
+    int periodic_x = (boundary_condition == PERIODIC_BOTH || boundary_condition == PERIODIC_X);
+    int periodic_y = (boundary_condition == PERIODIC_BOTH || boundary_condition == PERIODIC_Y);
+
+    x = apply_boundary(x, GL_CFG->Lx, periodic_x);
+    y = apply_boundary(y, GL_CFG->Ly, periodic_y);
     coordinates.x = x;
     coordinates.y = y;
     return coordinates;
@@ -63,17 +49,17 @@ Coordinates calculate_new_coordinates(CircleParticle *c) {
 double compute_circle_patch_interaction(const CircleParticle sp1, const CircleParticle sp2) {
     double energy = 0.0;
     // replace 4 by number of patches
-    for (int i = 0; i < PATCH_NUMBER; i++) {
+    for (int i = 0; i < num_patches; i++) {
         double gx1, gy1;
         compute_circle_patch_global_position(sp1, sp1.patches[i], &gx1, &gy1);
-        for (int j = 0; j < PATCH_NUMBER; j++) {
+        for (int j = 0; j < num_patches; j++) {
             double gx2, gy2;
             compute_circle_patch_global_position(sp2, sp2.patches[j], &gx2, &gy2);
             double dx = gx1 - gx2;
             double dy = gy1 - gy2;
             double distance = sqrt(dx * dx + dy * dy);
-            if (distance < 4 * PATCH_RADIUS_C) {
-                energy += sp1.patches[i].strength;
+            if (distance < 2 * PH_CFG->radius) {
+                energy += PH_CFG->interaction;
             }
         }
     }
@@ -83,15 +69,15 @@ double compute_circle_patch_interaction(const CircleParticle sp1, const CirclePa
 double compute_circle_patch_energy(const CircleParticle c, int idx) {
     double sum = 0.0;
 
-    int uniqueNeighbors[64];
-    int uniqueCount = 0;
+    int epoch = current_epoch++;
+
 
     int cell_idx = get_cell_index(c.x, c.y);
     for (int dx = -1; dx <= 1; dx++) {
         for (int dy = -1; dy <= 1; dy++) {
-            int neighbour_cell = cell_idx + dx * Mx_C + dy;
+            int neighbour_cell = cell_idx + dx * CL_CFG->Mx + dy;
             // account for boundary conditions
-            neighbour_cell = (neighbour_cell + NUM_CELLS_C) % NUM_CELLS_C;
+            neighbour_cell = (neighbour_cell + CL_CFG->num_cells) % CL_CFG->num_cells;
 
             for (int i = 0; i < 4; i++) {
                 if (parts_in_cells[neighbour_cell][i] == -1) break;
@@ -99,17 +85,13 @@ double compute_circle_patch_energy(const CircleParticle c, int idx) {
                 int n_idx = parts_in_cells[neighbour_cell][i];
                 if (n_idx == idx) continue;
 
-                sum += compute_circle_patch_interaction(particles[n_idx], c);
+                if (visited[n_idx] != epoch) {
+                    sum += compute_circle_patch_interaction(particles[n_idx], c);
+                    visited[n_idx] = epoch;
+                }
             }
         }
     }
-    // printf("%lf\n", sum);
-    // for (int k = 0; k < uniqueCount; k++)
-    // {
-    //     int neighbor_idx = uniqueNeighbors[k];
-
-    //     sum += compute_circle_patch_interaction(particles[neighbor_idx], c);
-    // }
 
     return sum;
 }
@@ -118,14 +100,14 @@ double compute_circle_patch_energy(const CircleParticle c, int idx) {
 void animate_circle_movement(int steps, int totalCircles) {
     FILE *f = fopen("data/circle_animation.xyz", "w");
     if (!f) {
-        printf("Error opening animation file\n");
+        print_error(true, "Error opening animation file\n");
         return;
     }
 
     FILE *energyFile = fopen("data/energy.dat", "w");
 
     if (!energyFile) {
-        printf("Error opening energy file\n");
+        print_error(true, "Error opening energy file\n");
         exit(1);
     }
 
@@ -138,9 +120,9 @@ void animate_circle_movement(int steps, int totalCircles) {
     fprintf(energyFile, "%d %lf\n", 0, potential_energy);
 
     for (int step = 1; step <= steps; step++) {
-        for (int attempt = 0; attempt < N; attempt++) {
-            int idx = rand() % totalCircles;
-            double r = (double) rand() / RAND_MAX;
+        for (int attempt = 0; attempt < GL_CFG->num_particles; attempt++) {
+            int idx = (int) (drand48() * totalCircles);
+            double r = drand48();
 
             CircleParticle candidate = particles[idx];
             Coordinates coordinates = calculate_new_coordinates(&candidate);
@@ -158,7 +140,7 @@ void animate_circle_movement(int steps, int totalCircles) {
 
             double deltaE = compute_circle_patch_energy(particles[idx], idx) - oldEnergy;
             if (deltaE != 0) {
-                if (deltaE <= 0 || exp(-deltaE / KT) > (double) rand() / RAND_MAX) {
+                if (deltaE <= 0 || exp(-deltaE / GL_CFG->temperature) > drand48()) {
                     potential_energy += deltaE / 2;
                 } else {
                     move_particle(idx, oldCx, oldCy);
@@ -168,44 +150,48 @@ void animate_circle_movement(int steps, int totalCircles) {
             }
         }
 
-        fprintf(f, "%d\n", totalCircles + totalCircles * PATCH_NUMBER);
+        fprintf(f, "%d\n", totalCircles + totalCircles * num_patches);
         fprintf(
             f,
             "Properties=species:S:1:pos:R:3:orientation:R:4:aspherical_shape:R:3 Lattice=\"%lf 0.0 0.0 0.0 %lf 0.0 0.0 0.0 0.0001\"\n",
-            Lx, Ly);
+            GL_CFG->Lx, GL_CFG->Ly);
         for (int i = 0; i < totalCircles; i++) {
             fprintf(f, "B %.6f %.6f %.6f  %.6f %.6f %.6f %.6f  %.6f %.6f %.6f\n",
                     particles[i].x,
                     particles[i].y,
-                    0.0,
+                    Z_AXIS,
                     particles[i].q[0],
                     particles[i].q[1],
                     particles[i].q[2],
                     particles[i].q[3],
-                    SIGMA / 2.0,
-                    SIGMA / 2.0,
-                    SIGMA / 2.0);
+                    GL_CFG->particle_size * 0.5,
+                    GL_CFG->particle_size * 0.5,
+                    GL_CFG->particle_size * 0.125);
         }
 
         for (int i = 0; i < totalCircles; i++) {
-            for (int j = 0; j < PATCH_NUMBER; j++) {
+            for (int j = 0; j < num_patches; j++) {
                 double global_x, global_y;
                 compute_circle_patch_global_position(particles[i], particles[i].patches[j], &global_x, &global_y);
                 fprintf(f, "P %8.3f %8.3f %8.3f  %8.3f %8.3f %8.3f %8.3f  %8.3f %8.3f %8.3f\n",
                         global_x,
                         global_y,
-                        0.0,
+                        Z_AXIS,
                         particles[i].q[0],
                         particles[i].q[1],
                         particles[i].q[2],
                         particles[i].q[3],
-                        PATCH_RADIUS_C,
-                        PATCH_RADIUS_C,
-                        PATCH_RADIUS_C);
+                        PH_CFG->radius * 0.5,
+                        PH_CFG->radius * 0.5,
+                        PH_CFG->radius * 0.125);
             }
         }
         fprintf(energyFile, "%d %lf\n", step, potential_energy);
     }
     fclose(energyFile);
     fclose(f);
+
+    free(particles);
+    free(particles_idx);
+    free(parts_in_cells);
 }

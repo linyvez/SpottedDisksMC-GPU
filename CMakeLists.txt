@@ -12,7 +12,11 @@ add_executable(
         src/square_move.c
         src/circle_config.c
         src/circle_move.c
-        main.c)
+        main.c
+        src/config.c
+        src/patch.c
+        src/print_error.c
+        src/general_config.c)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
