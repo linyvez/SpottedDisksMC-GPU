@@ -3,8 +3,6 @@ project(particle_simulation C)
 
 set(CMAKE_C_STANDARD 11)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
-
 add_executable(
         ${CMAKE_PROJECT_NAME}
         src/periodic_boundary.c
@@ -12,9 +10,13 @@ add_executable(
         src/square_move.c
         src/circle_config.c
         src/circle_move.c
-        main.c)
+        main.c
+        src/patch.c)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 target_link_libraries(${CMAKE_PROJECT_NAME} m)
 
+install(TARGETS ${PROJECT_NAME}
+        RUNTIME DESTINATION bin
+)

@@ -58,10 +58,11 @@ echo "Configuring $BUILD_TYPE build in '$BUILD_DIR' directory..."
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
-cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCMAKE_C_FLAGS="$PROFILE_FLAGS" ..
+PROJECT_ROOT="$(cd .. && pwd)"
 
-make
+cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+ -DCMAKE_C_FLAGS="$PROFILE_FLAGS" \
+ -DCMAKE_INSTALL_PREFIX="$PROJECT_ROOT" \
+ ..
 
-
-echo "Build successful! Executable located at: ./bin/particle_simulation"
-
+cmake --build . --target install
