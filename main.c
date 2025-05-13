@@ -1,39 +1,56 @@
-#include "square_config.h"
-#include "square_move.h"
-#include "periodic_boundary.h"
-#include "circle_config.h"
-#include "circle_move.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <periodic_boundary.h>
 
-int main(int argc, char *argv[])
-{   
-    // condition, particle type, patchy type
-    if (argc != 4)
-    {
+#include "square_move.cuh"
+#include <square_config.h>
+#include <string.h>
+
+#include "circle_config.h"
+#include "circle_move.cuh"
+
+
+int main(int argc, char *argv[]) {
+    if (argc != 5) {
         fprintf(stderr, "Error, incorrect number of arguments.\n");
         return 1;
     }
 
-    srand((unsigned)time(NULL));
-    const int condition = atoi(argv[1]);
+    srand(time(NULL));
+    int condition = atoi(argv[1]);
+
     set_condition(condition);
 
-    const int particle_type = atoi(argv[2]);
-    const int patchy_type = atoi(argv[3]);
+    int particle = atoi(argv[2]);
 
-    const clock_t start = clock();
-    if (particle_type == 0) {
-        int totalCircles = generate_random_circles();
-        animate_circle_movement(ANIMATION_STEPS, totalCircles);
-    }
-    else {
-        int totalSquares = generate_random_squares(patchy_type);
-        animate_movement(ANIMATION_STEPS, totalSquares);
-    }
-    
-    const clock_t end = clock();
 
-    double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
-    printf("%f\n", cpu_time_used);
+    int patch = atoi(argv[3]);
+
+    int flag = atoi(argv[4]);
+
+
+    SquareParticle squares[N_PAR];
+    CircleParticle circles[N_PAR];
+    int neighborCount[NUM_CELLS];
+    int neighbors[NUM_CELLS][MAX_NEIGH];
+
+    memset(neighborCount, 0, sizeof(neighborCount));
+
+    LinkedCell cell_struct;
+    cell_struct.count = neighborCount;
+    cell_struct.neighbors = neighbors;
+
+    if (particle == 1) {
+        int totalSquares = generate_random_squares(patch, squares, cell_struct);
+        animate_movement(totalSquares, squares, cell_struct, flag);
+
+    } else if (particle == 0) {
+        int totalCircles = generate_random_circles(patch, circles, cell_struct);
+        animate_movement_c(totalCircles, circles, cell_struct, flag);
+    }
+
+
 
     return 0;
 }
