@@ -1,41 +1,24 @@
 #include "periodic_boundary.h"
-#include "square_config.h"
 
-BoundaryCondition boundary_condition = NO_BOUNDARY;
+#include <general_config.h>
+#include <tgmath.h>
 
-#include <math.h>
+BoundaryCondition h_bc;
+
+void set_condition(int cond) {
+    h_bc = (BoundaryCondition)cond;
+}
 
 void periodic_boundary(double *dx, double *dy) {
-    if (boundary_condition == PERIODIC_X || boundary_condition == PERIODIC_BOTH) {
+
+    if ((h_bc & PERIODIC_X) != 0) {
         *dx = fmod(*dx + 0.5 * Lx, Lx);
-        if (*dx < 0)
-            *dx += Lx;
+        if (*dx < 0) *dx += Lx;
         *dx -= 0.5 * Lx;
     }
-    if (boundary_condition == PERIODIC_Y || boundary_condition == PERIODIC_BOTH) {
+    if ((h_bc & PERIODIC_Y) != 0) {
         *dy = fmod(*dy + 0.5 * Ly, Ly);
-        if (*dy < 0)
-            *dy += Ly;
+        if (*dy < 0) *dy += Ly;
         *dy -= 0.5 * Ly;
     }
-}
-
-void set_condition(BoundaryCondition condition) {
-    boundary_condition = condition;
-}
-
-
-double apply_boundary(double coord, double L, int periodic) {
-    if (periodic) {
-        if (coord < 0)
-            coord += L;
-        else if (coord > L)
-            coord -= L;
-    } else {
-        if (coord < 0)
-            coord = 0;
-        else if (coord > L)
-            coord = L;
-    }
-    return coord;
 }
